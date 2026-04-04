@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Confinement at Finite θ (Theta) — a simple explainer (with visuals)</title>
+  <meta name="description" content="A popular-science / undergrad-friendly explainer of arXiv:2603.24732 (Confinement in Holographic Theories at Finite Theta), with inline SVG graphics." />
+
+  <style>
+    :root{
+      --bg: #0b0d12;
+      --panel: #111522;
+      --text: #e9edf6;
+      --muted: #b8c2d9;
+      --faint: #8b96b3;
+      --brand: #8ab4ff;
+      --brand2:#7ee0c1;
+      --warn: #ffd48a;
+      --danger:#ff9aa8;
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --maxw: 980px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --radius: 16px;
+      --lh: 1.6;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#fafbff;
+        --panel:#ffffff;
+        --text:#141826;
+        --muted:#3c4763;
+        --faint:#5f6b88;
+        --brand:#2457ff;
+        --brand2:#0b8f6b;
+        --warn:#8a5b00;
+        --danger:#b8002a;
+        --border: rgba(20,24,38,.12);
+        --shadow: 0 10px 25px rgba(20,24,38,.08);
+      }
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      line-height: var(--lh);
+      background: radial-gradient(1200px 800px at 10% -10%, rgba(138,180,255,.18), transparent 50%),
+                  radial-gradient(900px 700px at 100% 0%, rgba(126,224,193,.16), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    /* Accessibility helpers */
+    .skip-link{
+      position:absolute; left:-999px; top:8px;
+      background:var(--panel); color:var(--text);
+      padding:.6rem .8rem; border:1px solid var(--border);
+      border-radius:10px; z-index:999;
+    }
+    .skip-link:focus{ left:10px; }
+
+    a{ color:var(--brand); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+    code,kbd,pre{
+      font-family: var(--mono);
+      font-size: 0.95em;
+    }
+
+    .wrap{ max-width: var(--maxw); margin: 0 auto; padding: 28px 18px 64px; }
+    header.hero{
+      padding: 24px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 70%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .hero h1{
+      margin: 0 0 8px;
+      font-size: clamp(1.7rem, 2.6vw, 2.4rem);
+      letter-spacing: -0.02em;
+    }
+    .hero p{ margin: 8px 0; color: var(--muted); }
+    .meta{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin-top: 14px;
+      color: var(--faint);
+      font-size: .95rem;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.3rem .6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+    }
+    nav.toc{
+      margin: 18px 0 0;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+    }
+    nav.toc strong{ display:block; margin-bottom:6px; }
+    nav.toc ul{
+      margin: 0; padding-left: 18px;
+      display:grid; gap: 6px;
+    }
+    nav.toc a{ color: var(--text); }
+    nav.toc a span{ color: var(--faint); }
+
+    main{ margin-top: 18px; display:grid; gap: 16px; }
+    section.card{
+      padding: 18px 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    section.card h2{
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+      letter-spacing: -0.01em;
+    }
+    section.card h3{
+      margin: 14px 0 6px;
+      font-size: 1.06rem;
+      color: var(--text);
+    }
+    .lede{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 860px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .callout{
+      border-left: 4px solid var(--brand2);
+      padding: 10px 12px;
+      background: rgba(126,224,193,.08);
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+    .callout.warn{
+      border-left-color: var(--warn);
+      background: rgba(255,212,138,.10);
+    }
+    .callout.danger{
+      border-left-color: var(--danger);
+      background: rgba(255,154,168,.10);
+    }
+
+    .mini-def{
+      margin: 10px 0 0;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+    }
+    .mini-def dt{ font-weight: 700; }
+    .mini-def dd{ margin: 6px 0 10px; color: var(--muted); }
+
+    figure{
+      margin: 12px 0 0;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      overflow: hidden;
+    }
+    figcaption{
+      margin-top: 8px;
+      color: var(--faint);
+      font-size: .93rem;
+    }
+
+    .row{
+      display:flex; flex-wrap:wrap;
+      gap: 10px 14px;
+      align-items:center;
+    }
+    label.small{
+      font-size: .92rem;
+      color: var(--muted);
+    }
+    input[type="range"]{
+      width: min(420px, 100%);
+      accent-color: var(--brand);
+    }
+    .readout{
+      font-family: var(--mono);
+      color: var(--text);
+      padding: .25rem .5rem;
+      border:1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255,255,255,.03);
+    }
+
+    details{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+    summary{
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .eq{
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      background: rgba(255,255,255,.02);
+      overflow:auto;
+    }
+    .eq code{ white-space: pre; }
+
+    footer{
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      color: var(--muted);
+    }
+    .fineprint{ color: var(--faint); font-size: .93rem; }
+
+    @media print{
+      body{ background:#fff; color:#000; }
+      header.hero, section.card, footer{ box-shadow:none; }
+      nav.toc{ display:none; }
+      a{ color:#000; text-decoration: underline; }
+    }
+  </style>
+</head>
+
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<div class="wrap">
+  <header class="hero">
+    <h1>Confinement at finite <span aria-label="theta">θ</span>: a simple explainer (with visuals)</h1>
+    <p class="lede">
+      A popular-science / undergrad-friendly walkthrough of <em>Confinement in Holographic Theories at Finite Theta</em>
+      (arXiv:2603.24732), focusing on the “big picture” while keeping a few key formulas.
+    </p>
+
+    <div class="meta" role="list" aria-label="Page metadata">
+      <span class="pill" role="listitem"><strong>Paper:</strong>&nbsp;<a href="https://arxiv.org/abs/2603.24732" target="_blank" rel="noopener">arXiv:2603.24732</a></span>
+      <span class="pill" role="listitem"><strong>Author:</strong>&nbsp;Rashmish K. Mishra</span>
+      <span class="pill" role="listitem"><strong>Posted:</strong>&nbsp;2026‑03‑25</span>
+      <span class="pill" role="listitem"><strong>Audience:</strong>&nbsp;undergrad / popular science</span>
+    </div>
+
+    <nav class="toc" aria-label="Table of contents">
+      <strong>On this page</strong>
+      <ul>
+        <li><a href="#tldr">TL;DR <span>— what changes when θ ≠ 0</span></a></li>
+        <li><a href="#basics">Basics <span>— confinement, deconfinement, and θ</span></a></li>
+        <li><a href="#holography">Holography picture <span>— branes vs horizon</span></a></li>
+        <li><a href="#model">The simplified 5D model <span>— the key “ingredients”</span></a></li>
+        <li><a href="#result1">Result 1 <span>— Tc goes down ~ θ²</span></a></li>
+        <li><a href="#result2">Result 2 <span>— rate can speed up or slow down</span></a></li>
+        <li><a href="#cosmo">Early universe <span>— time-dependent θ as a “switch”</span></a></li>
+        <li><a href="#caveats">Caveats & what’s next</a></li>
+        <li><a href="#refs">References</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="content">
+    <section id="tldr" class="card">
+      <h2>TL;DR (in plain English)</h2>
+      <p class="lede">
+        The paper studies a strongly-coupled confining gauge theory at finite temperature, and asks:
+        what changes when the theory also has a nonzero “vacuum angle” <strong>θ</strong>?
+        Using a simplified holographic (gravity-dual) model, it finds:
+      </p>
+
+      <div class="callout">
+        <ul>
+          <li><strong>The confinement transition temperature decreases</strong> when θ is turned on, and the leading shift is <strong>quadratic</strong> in θ (∝ θ²).</li>
+          <li>In the deconfined (“hot”) phase, the model gives <strong>zero topological susceptibility</strong> (θ doesn’t change the deconfined free energy in this approximation).</li>
+          <li><strong>The transition rate can be enhanced or reduced</strong>, depending on whether the UV deformation is relevant or irrelevant, and in some cases the confined phase can be destabilized.</li>
+          <li>If θ changes with time in the early universe, it can act like a <strong>control knob</strong> that delays the transition and then “turns it on,” affecting gravitational-wave expectations.</li>
+        </ul>
+      </div>
+
+      <p class="fineprint">
+        If you only remember one idea: in this setup, θ effectively adds a positive quartic term to the
+        “radion potential,” and that reshapes both <em>when</em> confinement wins and <em>how</em> the transition proceeds.
+      </p>
+    </section>
+
+    <section id="basics" class="card">
+      <h2>Basics: confinement, deconfinement, and θ</h2>
+
+      <div class="grid2">
+        <div>
+          <h3>Confinement vs deconfinement (cartoon intuition)</h3>
+          <p class="lede">
+            “Confinement” means the fundamental charges of the gauge theory can’t be pulled apart at low energies;
+            they show up only inside bound states. “Deconfinement” (typically at high temperature) is the phase
+            where those charges behave more like a plasma.
+          </p>
+
+          <h3>What is θ?</h3>
+          <p class="lede">
+            θ (theta) is a periodic parameter (θ ≡ θ + 2π) that couples to a topological density
+            often written schematically as <code>tr(F F̃)</code>.
+            Even though θ is “just one number” in the UV, it can have nontrivial IR effects.
+          </p>
+
+          <dl class="mini-def">
+            <dt>Periodic parameter</dt>
+            <dd>Changing θ by 2π gives an equivalent theory, but the physics can involve multiple “branches” labeled by an integer.</dd>
+
+            <dt>Topological susceptibility (χ)</dt>
+            <dd>A measure of how the vacuum energy responds to θ (roughly: second derivative with respect to θ).</dd>
+          </dl>
+        </div>
+
+        <figure aria-label="A simple phase diagram cartoon" style="margin:0;">
+          <svg viewBox="0 0 640 420" width="100%" height="auto" role="img">
+            <title>Cartoon phase diagram: confinement vs temperature and theta</title>
+            <desc>A qualitative diagram showing a critical temperature decreasing as theta increases.</desc>
+
+            <!-- axes -->
+            <line x1="70" y1="340" x2="590" y2="340" stroke="currentColor" opacity=".55" />
+            <line x1="70" y1="340" x2="70" y2="60" stroke="currentColor" opacity=".55" />
+
+            <text x="580" y="365" fill="currentColor" opacity=".8" font-size="16">θ</text>
+            <text x="18" y="70" fill="currentColor" opacity=".8" font-size="16">T</text>
+
+            <!-- curve Tc(theta) -->
+            <path d="M 90 120 C 230 130, 350 170, 520 270"
+                  fill="none" stroke="currentColor" stroke-width="4" opacity=".9"/>
+            <path d="M 90 120 C 230 130, 350 170, 520 270"
+                  fill="none" stroke="rgba(138,180,255,.55)" stroke-width="10" />
+
+            <!-- region labels -->
+            <text x="160" y="95" fill="currentColor" opacity=".85" font-size="16">Deconfined (hot)</text>
+            <text x="150" y="310" fill="currentColor" opacity=".85" font-size="16">Confined (cold)</text>
+
+            <!-- shaded areas -->
+            <path d="M 90 120 C 230 130, 350 170, 520 270 L 520 340 L 90 340 Z"
+                  fill="rgba(126,224,193,.10)"/>
+            <path d="M 70 60 L 590 60 L 590 340 L 520 340 L 520 270 C 350 170, 230 130, 90 120 L 70 120 Z"
+                  fill="rgba(255,255,255,.03)"/>
+
+            <!-- tick labels -->
+            <text x="70" y="360" fill="currentColor" opacity=".65" font-size="13">0</text>
+            <text x="560" y="360" fill="currentColor" opacity=".65" font-size="13">π</text>
+            <text x="44" y="340" fill="currentColor" opacity=".65" font-size="13">0</text>
+            <text x="36" y="80" fill="currentColor" opacity=".65" font-size="13">high</text>
+
+            <text x="90" y="398" fill="currentColor" opacity=".55" font-size="12">
+              Visual only (not to scale).
+            </text>
+          </svg>
+          <figcaption>
+            A qualitative picture: the critical temperature <code>Tc(θ)</code> decreases as θ increases (leading shift ∝ θ²).
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="holography" class="card">
+      <h2>Holography in one picture: “branes vs horizon”</h2>
+      <p class="lede">
+        In gauge/gravity duality, a strongly-coupled gauge theory can be mapped to a higher-dimensional gravitational setup.
+        In this paper’s simplified 5D story, the two phases look like two different geometries:
+      </p>
+
+      <figure>
+        <svg viewBox="0 0 980 360" width="100%" height="auto" role="img">
+          <title>Two holographic geometries representing the phases</title>
+          <desc>Left: a slice of AdS with UV and IR branes (confined). Right: AdS-Schwarzschild with a horizon (deconfined).</desc>
+
+          <!-- Left panel -->
+          <rect x="20" y="30" width="450" height="300" rx="18" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.10)"/>
+          <text x="40" y="60" fill="currentColor" font-size="18" opacity=".9">Confined phase (low T)</text>
+
+          <!-- "bulk" -->
+          <path d="M 70 90 C 160 120, 210 165, 250 230 C 285 290, 350 315, 430 305"
+                fill="none" stroke="rgba(138,180,255,.55)" stroke-width="6" />
+          <text x="80" y="115" fill="currentColor" opacity=".7" font-size="13">extra dimension (z)</text>
+
+          <!-- UV brane -->
+          <line x1="70" y1="90" x2="420" y2="90" stroke="rgba(126,224,193,.85)" stroke-width="4"/>
+          <text x="75" y="82" fill="currentColor" opacity=".85" font-size="13">UV boundary</text>
+
+          <!-- IR brane -->
+          <line x1="170" y1="270" x2="430" y2="270" stroke="rgba(126,224,193,.85)" stroke-width="4"/>
+          <text x="175" y="292" fill="currentColor" opacity=".85" font-size="13">IR boundary (end of space)</text>
+
+          <!-- Radion arrow -->
+          <line x1="120" y1="105" x2="120" y2="258" stroke="currentColor" opacity=".55" stroke-width="2"/>
+          <polygon points="120,258 114,246 126,246" fill="currentColor" opacity=".7" />
+          <text x="130" y="190" fill="currentColor" opacity=".7" font-size="13">“radion” sets separation</text>
+
+          <!-- Right panel -->
+          <rect x="510" y="30" width="450" height="300" rx="18" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.10)"/>
+          <text x="530" y="60" fill="currentColor" font-size="18" opacity=".9">Deconfined phase (high T)</text>
+
+          <!-- "bulk" with horizon -->
+          <path d="M 560 90 C 650 115, 710 160, 735 215 C 760 270, 820 305, 940 305"
+                fill="none" stroke="rgba(138,180,255,.55)" stroke-width="6" />
+
+          <line x1="560" y1="90" x2="930" y2="90" stroke="rgba(126,224,193,.85)" stroke-width="4"/>
+          <text x="565" y="82" fill="currentColor" opacity=".85" font-size="13">UV boundary</text>
+
+          <!-- horizon -->
+          <circle cx="760" cy="240" r="36" fill="rgba(255,154,168,.18)" stroke="rgba(255,154,168,.7)" stroke-width="3"/>
+          <text x="730" y="246" fill="currentColor" opacity=".9" font-size="13">horizon</text>
+          <text x="560" y="115" fill="currentColor" opacity=".7" font-size="13">extra dimension (z)</text>
+        </svg>
+        <figcaption>
+          Confined phase: space ends at an IR boundary (a stand-in for confinement). Deconfined phase: there’s a horizon (thermal black brane).
+        </figcaption>
+      </figure>
+    </section>
+
+    <section id="model" class="card">
+      <h2>The simplified 5D model: the key ingredients</h2>
+      <p class="lede">
+        The model includes gravity plus two bulk scalar fields:
+        <strong>ϕ</strong> (dual to <code>tr(F²)</code>, used like a Goldberger–Wise field to generate a confinement scale)
+        and <strong>σ</strong> (dual to <code>tr(F F̃)</code>, used to model the vacuum angle θ).
+      </p>
+
+      <div class="grid2">
+        <div>
+          <h3>The crucial boundary conditions for σ (the “θ field”)</h3>
+          <p class="lede">
+            In the confined geometry (with an IR end), σ must match θ in the UV, and it is taken to vanish at the IR end:
+          </p>
+          <div class="eq" aria-label="Boundary conditions equation block">
+            <code>σ|UV = θ + 2πk,   σ|IR = 0,   k ∈ ℤ</code>
+          </div>
+
+          <div class="callout">
+            <strong>Why this matters:</strong>
+            those boundary conditions are what make θ feed into the low-energy “radion potential” in a very specific way.
+          </div>
+
+          <h3>What is the “radion” φ?</h3>
+          <p class="lede">
+            The radion is an effective 4D field that parametrizes how far apart the UV and IR boundaries are.
+            That separation sets the confinement scale. The phase transition can be discussed using an effective potential <code>V(φ)</code>.
+          </p>
+        </div>
+
+        <figure aria-label="Cartoon: theta boundary conditions" style="margin:0;">
+          <svg viewBox="0 0 640 420" width="100%" height="auto" role="img">
+            <title>Cartoon of sigma boundary conditions in the extra dimension</title>
+            <desc>A line representing the extra dimension with UV at top and IR at bottom; sigma equals theta at UV and goes to zero at IR.</desc>
+
+            <rect x="60" y="40" width="520" height="340" rx="18" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.10)"/>
+            <text x="85" y="78" fill="currentColor" opacity=".9" font-size="16">Extra dimension (z)</text>
+
+            <!-- axis -->
+            <line x1="170" y1="110" x2="170" y2="330" stroke="currentColor" opacity=".5" stroke-width="3"/>
+
+            <!-- UV / IR markers -->
+            <circle cx="170" cy="110" r="8" fill="rgba(126,224,193,.9)"/>
+            <circle cx="170" cy="330" r="8" fill="rgba(126,224,193,.9)"/>
+
+            <text x="190" y="115" fill="currentColor" opacity=".85" font-size="14">UV: σ = θ + 2πk</text>
+            <text x="190" y="335" fill="currentColor" opacity=".85" font-size="14">IR end: σ = 0</text>
+
+            <!-- sigma profile -->
+            <path d="M 170 110 C 260 150, 340 230, 410 330"
+                  fill="none" stroke="rgba(138,180,255,.75)" stroke-width="6"/>
+
+            <text x="85" y="395" fill="currentColor" opacity=".55" font-size="12">
+              Cartoon only (real profile depends on geometry; key is UV and IR conditions).
+            </text>
+          </svg>
+          <figcaption>
+            The UV fixes θ; the IR condition anchors the “angle” at the end of space (important for how θ affects confinement).
+          </figcaption>
+        </figure>
+      </div>
+
+      <details>
+        <summary>Optional technical snapshot (still readable)</summary>
+        <p class="lede">
+          In the small-φ regime relevant for a large hierarchy, the paper finds θ contributes an effective quartic term:
+        </p>
+        <div class="eq">
+          <code>
+Vθ(φ) ≈ min_k [ (const) · (θ + 2πk)² · φ⁴ ]  ≡ 24 (M5 ℓ)³ κθ φ⁴
+κθ ∝ (θ + 2πk)² / N²   (so the effect is suppressed at large N)
+          </code>
+        </div>
+        <p class="fineprint">
+          Translation: θ mostly shows up as “add a positive φ⁴ term,” whose coefficient scales like θ² and is 1/N² suppressed.
+        </p>
+      </details>
+    </section>
+
+    <section id="result1" class="card">
+      <h2>Result 1: the critical temperature <code>Tc</code> goes down like θ² (for small θ)</h2>
+      <p class="lede">
+        The critical temperature <code>Tc(θ)</code> is where the confined and deconfined phases have equal free energy.
+        In the model, θ changes the confined-phase free energy, while in the deconfined phase the σ contribution vanishes (in the approximation used).
+      </p>
+
+      <div class="callout">
+        <strong>Headline:</strong> to leading order at small θ,
+        <code>Tc(θ) ≈ Tc(0) · [1 − A · (θ/2π)² + …]</code>
+        with <code>A &gt; 0</code> and typically <code>A ∝ 1/N²</code>.
+      </div>
+
+      <div class="row" aria-label="Interactive theta slider">
+        <label class="small" for="thetaRange">Try a (purely illustrative) θ slider:</label>
+        <input id="thetaRange" type="range" min="0" max="3.1416" step="0.01" value="0.90" />
+        <span class="readout" id="thetaReadout" aria-live="polite">θ = 0.90 rad</span>
+        <span class="readout" id="tcReadout" aria-live="polite">Tc/Tc(0) ≈ 0.98</span>
+      </div>
+
+      <figure>
+        <svg id="tcChart" viewBox="0 0 980 320" width="100%" height="auto" role="img" aria-label="Interactive chart of Tc ratio vs theta">
+          <title>Interactive (illustrative) curve of Tc(θ)/Tc(0)</title>
+          <desc>A curve that decreases roughly quadratically with theta, drawn with SVG.</desc>
+
+          <!-- Plot area -->
+          <rect x="60" y="30" width="880" height="230" rx="12" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.10)"/>
+
+          <!-- Axes -->
+          <line x1="90" y1="240" x2="920" y2="240" stroke="currentColor" opacity=".55"/>
+          <line x1="90" y1="60" x2="90" y2="240" stroke="currentColor" opacity=".55"/>
+
+          <text x="920" y="270" fill="currentColor" opacity=".8" font-size="14">θ (0 → π)</text>
+          <text x="22" y="64" fill="currentColor" opacity=".8" font-size="14">Tc/Tc(0)</text>
+
+          <!-- y ticks -->
+          <text x="62" y="244" fill="currentColor" opacity=".65" font-size="12">0.80</text>
+          <text x="62" y="154" fill="currentColor" opacity=".65" font-size="12">0.90</text>
+          <text x="62" y="64" fill="currentColor" opacity=".65" font-size="12">1.00</text>
+
+          <!-- gridlines -->
+          <line x1="90" y1="240" x2="920" y2="240" stroke="currentColor" opacity=".12"/>
+          <line x1="90" y1="150" x2="920" y2="150" stroke="currentColor" opacity=".12"/>
+          <line x1="90" y1="60" x2="920" y2="60" stroke="currentColor" opacity=".12"/>
+
+          <!-- curve (filled by JS) -->
+          <path id="tcCurveGlow" d="" fill="none" stroke="rgba(138,180,255,.40)" stroke-width="10" stroke-linecap="round"/>
+          <path id="tcCurve" d="" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- marker (filled by JS) -->
+          <circle id="tcDot" cx="0" cy="0" r="7" fill="rgba(126,224,193,.95)" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
+          <text id="tcDotLabel" x="0" y="0" fill="currentColor" opacity=".85" font-size="13"></text>
+        </svg>
+        <figcaption>
+          This plot is <strong>illustrative</strong>: it shows the paper’s “quadratic decrease” idea, not a fit to a particular parameter choice.
+          The coefficient depends on model parameters and is typically suppressed at large N.
+        </figcaption>
+      </figure>
+
+      <details>
+        <summary>Optional: what the paper actually computes</summary>
+        <p class="lede">
+          The paper derives <code>Tc(θ)</code> by matching free energies, and shows explicitly how the leading dependence is quadratic in θ,
+          with large‑N suppression. It also notes special behavior depending on the type of radion potential.
+        </p>
+      </details>
+    </section>
+
+    <section id="result2" class="card">
+      <h2>Result 2: the transition rate can speed up or slow down (relevant vs irrelevant UV deformations)</h2>
+      <p class="lede">
+        A first‑order phase transition proceeds by <strong>bubble nucleation</strong>:
+        bubbles of the confined phase form inside the deconfined phase, then grow and collide.
+        A key quantity is the “bounce action” <code>Sb</code>: smaller <code>Sb</code> means an easier/faster transition.
+      </p>
+
+      <div class="callout warn">
+        <strong>Model-dependent punchline:</strong> θ changes the rate in two ways:
+        <ol>
+          <li>It shifts <code>Tc</code> (so the timeline moves).</li>
+          <li>It changes the effective quartic coefficient (so <code>Sb</code> can move up or down).</li>
+        </ol>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 980 340" width="100%" height="auto" role="img">
+          <title>Cartoon: bounce action versus temperature</title>
+          <desc>Two curves for Sb(T) showing how turning on theta can shift the curve and change its height.</desc>
+
+          <rect x="60" y="30" width="880" height="240" rx="12" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.10)"/>
+          <!-- Axes -->
+          <line x1="90" y1="250" x2="920" y2="250" stroke="currentColor" opacity=".55"/>
+          <line x1="90" y1="70" x2="90" y2="250" stroke="currentColor" opacity=".55"/>
+          <text x="920" y="305" fill="currentColor" opacity=".8" font-size="14">T/Tc</text>
+          <text x="22" y="74" fill="currentColor" opacity=".8" font-size="14">Sb</text>
+
+          <!-- Curves -->
+          <path d="M 140 230 C 220 210, 280 170, 330 125 C 390 70, 520 70, 650 78 C 760 85, 870 110, 900 130"
+                fill="none" stroke="rgba(138,180,255,.75)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M 140 240 C 240 235, 300 215, 360 180 C 420 145, 520 125, 650 120 C 770 116, 860 120, 900 126"
+                fill="none" stroke="rgba(126,224,193,.85)" stroke-width="6" stroke-linecap="round"/>
+
+          <!-- Legend -->
+          <circle cx="150" cy="55" r="6" fill="rgba(138,180,255,.75)"/>
+          <text x="165" y="60" fill="currentColor" opacity=".85" font-size="13">θ = 0 (cartoon)</text>
+          <circle cx="280" cy="55" r="6" fill="rgba(126,224,193,.85)"/>
+          <text x="295" y="60" fill="currentColor" opacity=".85" font-size="13">θ ≠ 0 (cartoon)</text>
+
+          <text x="90" y="330" fill="currentColor" opacity=".55" font-size="12">
+            Visual only (not to scale). The paper computes Sb scaling and shows how curves shift and move up/down depending on parameters.
+          </text>
+        </svg>
+        <figcaption>
+          Cartoon: turning on θ can (i) shift where Tc happens and (ii) move the bounce-action curve up or down.
+          The paper emphasizes different behavior depending on whether the UV deformation is relevant or irrelevant.
+        </figcaption>
+      </figure>
+
+      <details>
+        <summary>Optional technical details: what “relevant vs irrelevant” means here</summary>
+        <p class="lede">
+          The deformation is encoded through a parameter often denoted <code>ε</code> in a simple quadratic bulk potential for the ϕ field.
+          The paper allows either sign, corresponding to relevant vs irrelevant deformations in the UV.
+        </p>
+        <div class="eq">
+          <code>
+V(ϕ) = 2 ε ϕ²
+ε &gt; 0  → “irrelevant deformation” in the UV
+ε &lt; 0  → “relevant deformation” in the UV
+          </code>
+        </div>
+        <p class="fineprint">
+          The paper finds the rate can be enhanced for the relevant case and reduced for the irrelevant case, and also discusses
+          that for some parameter ranges in the irrelevant case the confined minimum can be destabilized.
+        </p>
+      </details>
+    </section>
+
+    <section id="cosmo" class="card">
+      <h2>Early universe idea: θ(t) can act like a “switch”</h2>
+      <p class="lede">
+        A particularly interesting application: if θ is time‑dependent (for example because it’s set by an axion‑like field or another sector),
+        then the universe can cool while the phase transition remains “off” (rate too small), and later a change in θ can make it suddenly “on.”
+        That gives a controlled way to generate <strong>supercooling</strong>.
+      </p>
+
+      <figure>
+        <svg viewBox="0 0 980 360" width="100%" height="auto" role="img">
+          <title>Flowchart: time-dependent theta triggers confinement</title>
+          <desc>A left-to-right flow diagram from hot phase with theta large, to supercooling, to theta dropping and the phase transition proceeding, leading to gravitational waves.</desc>
+
+          <!-- nodes -->
+          <g fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.12)">
+            <rect x="50" y="70" width="250" height="90" rx="14"/>
+            <rect x="355" y="70" width="250" height="90" rx="14"/>
+            <rect x="660" y="70" width="270" height="90" rx="14"/>
+            <rect x="210" y="210" width="280" height="90" rx="14"/>
+            <rect x="545" y="210" width="385" height="90" rx="14"/>
+          </g>
+
+          <!-- arrows -->
+          <g stroke="rgba(138,180,255,.75)" stroke-width="4" fill="none" stroke-linecap="round">
+            <path d="M 300 115 L 355 115"/>
+            <path d="M 605 115 L 660 115"/>
+            <path d="M 480 160 L 350 210"/>
+            <path d="M 490 255 L 545 255"/>
+          </g>
+          <g fill="rgba(138,180,255,.75)">
+            <polygon points="355,115 342,108 342,122"/>
+            <polygon points="660,115 647,108 647,122"/>
+            <polygon points="350,210 360,198 366,210 360,222"/>
+            <polygon points="545,255 532,248 532,262"/>
+          </g>
+
+          <!-- text -->
+          <text x="68" y="103" fill="currentColor" opacity=".9" font-size="15">Universe cools</text>
+          <text x="68" y="126" fill="currentColor" opacity=".75" font-size="13">but θ is large</text>
+          <text x="68" y="148" fill="currentColor" opacity=".75" font-size="13">→ bubbles rare</text>
+
+          <text x="373" y="103" fill="currentColor" opacity=".9" font-size="15">Supercooling</text>
+          <text x="373" y="126" fill="currentColor" opacity=".75" font-size="13">deconfined phase</text>
+          <text x="373" y="148" fill="currentColor" opacity=".75" font-size="13">lasts longer</text>
+
+          <text x="678" y="103" fill="currentColor" opacity=".9" font-size="15">θ drops (a “switch”)</text>
+          <text x="678" y="126" fill="currentColor" opacity=".75" font-size="13">bounce action decreases</text>
+          <text x="678" y="148" fill="currentColor" opacity=".75" font-size="13">→ transition proceeds</text>
+
+          <text x="228" y="244" fill="currentColor" opacity=".9" font-size="15">Bubble nucleation</text>
+          <text x="228" y="267" fill="currentColor" opacity=".75" font-size="13">growth + collisions</text>
+
+          <text x="563" y="244" fill="currentColor" opacity=".9" font-size="15">Gravitational waves can shift</text>
+          <text x="563" y="267" fill="currentColor" opacity=".75" font-size="13">peak frequency depends on β (slope of Sb)</text>
+        </svg>
+
+        <figcaption>
+          Conceptual pipeline: θ(t) can delay confinement, then trigger it, changing transition timing and potentially GW features.
+        </figcaption>
+      </figure>
+
+      <div class="callout">
+        <strong>Extra twist in the paper:</strong> because the θ-dependent potential has multiple branches (different integers <code>k</code>),
+        the transition might access multiple minima, which can form <strong>domain walls</strong> that later collapse and produce gravitational waves
+        with signatures different from bubble collisions.
+      </div>
+    </section>
+
+    <section id="caveats" class="card">
+      <h2>Caveats & what’s next</h2>
+
+      <div class="callout warn">
+        <strong>This is a controlled model, not a direct simulation of QCD.</strong>
+        The paper works in a limit of small backreaction (a simplifying assumption) to make analytic progress.
+      </div>
+
+      <h3>Why that’s still valuable</h3>
+      <p class="lede">
+        The payoff is clarity: you can see exactly how θ enters (through the σ field, its boundary conditions, and an induced quartic),
+        and then follow how that flows into <code>Tc</code>, stability of the confined minimum, and the transition rate.
+      </p>
+
+      <details>
+        <summary>Optional: a “puzzle” mentioned by the paper</summary>
+        <p class="lede">
+          The paper discusses how, beyond the small-backreaction limit, there can be subtle constraints involving the minimum temperature
+          of the deconfined (black brane) phase versus the critical temperature—and how θ-dependence can sharpen those constraints.
+        </p>
+      </details>
+
+      <div class="callout danger">
+        <strong>Don’t over-interpret:</strong>
+        the inline plots on this webpage are educational cartoons. For quantitative predictions (including any GW forecasts),
+        you’d want a specific model choice, parameter scan, and a careful transition calculation.
+      </div>
+    </section>
+
+    <section id="refs" class="card">
+      <h2>References</h2>
+      <ul>
+        <li>
+          Rashmish K. Mishra, <em>Confinement in Holographic Theories at Finite Theta</em>, arXiv:2603.24732 (2026).
+          <a href="https://arxiv.org/abs/2603.24732" target="_blank" rel="noopener">Abstract</a> ·
+          <a href="https://arxiv.org/pdf/2603.24732" target="_blank" rel="noopener">PDF</a>
+        </li>
+      </ul>
+      <p class="fineprint">
+        Tip: If you want to add “hover tooltips” for equations or link directly to specific equation numbers, I can generate a version with annotated footnotes.
+      </p>
+    </section>
+
+    <footer>
+      <strong>Want a version customized to your webpage?</strong>
+      <p class="fineprint">
+        Tell me your site’s style (fonts/colors), whether you want math rendered with MathJax/KaTeX, and whether you prefer the visuals to be
+        static SVG (current) or interactive (more sliders, toggles, and tooltips).
+      </p>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // -----------------------------
+  // Interactive "illustrative" Tc(θ) chart
+  // -----------------------------
+  // IMPORTANT: This is an educational visualization, not a parameter fit.
+  // The paper shows Tc decreases quadratically in θ (small θ), with large-N suppression.
+  // Here we draw a simple curve: Tc/T0 = 1 - A*(θ/(2π))^2, clamped.
+  const A = 0.55; // tweak this if you want a stronger/weaker drop (illustrative only)
+
+  const range = document.getElementById('thetaRange');
+  const thetaReadout = document.getElementById('thetaReadout');
+  const tcReadout = document.getElementById('tcReadout');
+
+  const tcCurve = document.getElementById('tcCurve');
+  const tcCurveGlow = document.getElementById('tcCurveGlow');
+  const tcDot = document.getElementById('tcDot');
+  const tcDotLabel = document.getElementById('tcDotLabel');
+
+  function tcRatio(theta){
+    const twoPi = 2*Math.PI;
+    let r = 1 - A*Math.pow(theta/twoPi, 2);
+    // Keep it within a sensible display range:
+    r = Math.max(0.80, Math.min(1.0, r));
+    return r;
+  }
+
+  function mapX(theta){
+    // x from 90..920 for theta 0..pi
+    const x0=90, x1=920;
+    return x0 + (x1-x0)*(theta/Math.PI);
+  }
+  function mapY(ratio){
+    // y from 60..240 for ratio 1.0..0.80
+    const yTop=60, yBot=240;
+    const rMax=1.0, rMin=0.80;
+    return yTop + (yBot-yTop)*((rMax - ratio)/(rMax - rMin));
+  }
+
+  function buildCurvePath(){
+    const N = 120;
+    let d = "";
+    for(let i=0;i<=N;i++){
+      const theta = Math.PI*(i/N);
+      const r = tcRatio(theta);
+      const x = mapX(theta);
+      const y = mapY(r);
+      d += (i===0 ? `M ${x.toFixed(2)} ${y.toFixed(2)}` : ` L ${x.toFixed(2)} ${y.toFixed(2)}`);
+    }
+    return d;
+  }
+
+  function update(){
+    const theta = parseFloat(range.value);
+    const r = tcRatio(theta);
+
+    thetaReadout.textContent = `θ = ${theta.toFixed(2)} rad`;
+    tcReadout.textContent = `Tc/Tc(0) ≈ ${r.toFixed(2)}`;
+
+    // Curve
+    const d = buildCurvePath();
+    tcCurve.setAttribute('d', d);
+    tcCurveGlow.setAttribute('d', d);
+
+    // Dot
+    const x = mapX(theta);
+    const y = mapY(r);
+    tcDot.setAttribute('cx', x);
+    tcDot.setAttribute('cy', y);
+
+    tcDotLabel.setAttribute('x', Math.min(x + 12, 860));
+    tcDotLabel.setAttribute('y', Math.max(y - 10, 70));
+    tcDotLabel.textContent = `${r.toFixed(2)}`;
+  }
+
+  range.addEventListener('input', update);
+  update();
+</script>
+</body>
+</html>
